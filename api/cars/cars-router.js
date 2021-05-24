@@ -1,20 +1,47 @@
 // DO YOUR MAGIC
-const express = require('express')
-const { whereNotExists } = require('../../data/db-config')
-const Car = require("./cars-model")
+const express = require("express");
+const {
+  checkCarId,
+  checkVinNumberValid,
+  checkCarPayload,
+} = require("./cars-middleware");
+const Car = require("./cars-model");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', (req,res)=>{
-    Car.getAll()
-    .then((car)=>{
-        res.status(200).json(car)
+router.get("/", (req, res) => {
+  Car.getAll()
+    .then((car) => {
+      res.status(200).json(car);
     })
-    .catch((err)=>whereNotExists(err))
-})
+    .catch((err) => console.log(err));
+});
+
+router.get("/:id", checkCarId, (req, res, next) => {
+  // DO YOUR MAGIC
+  Car.getById(req.params.id)
+    .then((car) => {
+      res.status(200).json(car);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+router.post("/", checkCarPayload, checkVinNumberValid, (req, res, next) => {
+  // console.log("req body",req.body)
+  Car.create(req.body)
+    .then((car) => {
+      console.log(car);
+      res.status(201).json(car);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
 
 router.use((err, req, res, next) => {
-    res.status(500).json({ message: err.message, stack: err.stack });
-  })
+  res.status(500).json({ message: err.message, stack: err.stack });
+});
 
-  module.exports = router;
+module.exports = router;

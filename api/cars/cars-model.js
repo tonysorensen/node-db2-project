@@ -7,14 +7,16 @@ const getAll = () => {
 
 const getById = (id) => {
   // DO YOUR MAGIC
-  return db("accounts").where({ id }).first();
+  return db("cars").where({ id }).first();
 }
 
 const create = (car) => {
   // DO YOUR MAGIC
-  const [id] = db("cars").insert(car);
+  // const [id] = db.insert(car);
 
-  return getById(id)
+  // return getById(id)
+  return db('cars').insert(car)
+  
 }
 
 module.exports = {
