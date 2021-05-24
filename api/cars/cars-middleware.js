@@ -5,10 +5,10 @@ const checkCarId = async (req, res, next) => {
   // DO YOUR MAGIC
   try {
     const car = await Car.getById(req.params.id);
-    console.log(car);
+    // console.log(car);
     if (car) {
       res.locals.car = car;
-      console.log(car);
+      // console.log(car);
       next();
     } else {
       res.status(404).json({ message: `car with id ${car} not found` });
@@ -46,8 +46,25 @@ const checkVinNumberValid = (req, res, next) => {
   }
 };
 
-const checkVinNumberUnique = (req, res, next) => {
+const checkVinNumberUnique = async (req, res, next) => {
   // DO YOUR MAGIC
+  try {
+    const uniqueVin = await Car.getByVin(req.body.vin);
+    console.log("unique", uniqueVin);
+    if (uniqueVin) {
+      res.locals.vin = uniqueVin;
+      next();
+    } else {
+      res.status(400).json({ message: `vin ${req.body.vin} already exists` });
+    }
+  } catch (e) {
+    next(e);
+  }
 };
 
-module.exports = { checkCarId, checkVinNumberValid, checkCarPayload };
+module.exports = {
+  checkCarId,
+  checkVinNumberValid,
+  checkCarPayload,
+  checkVinNumberUnique,
+};

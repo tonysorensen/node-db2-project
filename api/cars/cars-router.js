@@ -4,6 +4,7 @@ const {
   checkCarId,
   checkVinNumberValid,
   checkCarPayload,
+  checkVinNumberUnique,
 } = require("./cars-middleware");
 const Car = require("./cars-model");
 
@@ -28,17 +29,23 @@ router.get("/:id", checkCarId, (req, res, next) => {
     });
 });
 
-router.post("/", checkCarPayload, checkVinNumberValid, (req, res, next) => {
-  // console.log("req body",req.body)
-  Car.create(req.body)
-    .then((car) => {
-      console.log(car);
-      res.status(201).json(car);
-    })
-    .catch((err) => {
-      next(err);
-    });
-});
+router.post(
+  "/",
+  checkCarPayload,
+  checkVinNumberValid,
+  checkVinNumberUnique,
+  (req, res, next) => {
+    // console.log("req body",req.body)
+    Car.create(req.body)
+      .then((car) => {
+        console.log(car);
+        res.status(201).json(car);
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+);
 
 router.use((err, req, res, next) => {
   res.status(500).json({ message: err.message, stack: err.stack });
